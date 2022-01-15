@@ -16,26 +16,26 @@ func main() {
 	fmt.Printf("Currently there are %d still available.\n", remainingTickets)
 
 	// The following creates an infinite for loop
-	LOOP: for {
+	for {
 		var userFirstName string
 		var userLastName string
 		var emailAddress string
 		var userTickets uint
 
-		fmt.Print("What is your first name? ")
+		FIRSTNAME: fmt.Print("What is your first name? ")
 		fmt.Scanf("%s\n", &userFirstName)
 		fmt.Print("What is your last name? ")
 		fmt.Scanf("%s\n", &userLastName)
-		fmt.Print("What is your email address? ")
+		EMAIL: fmt.Print("What is your email address? ")
 		fmt.Scanf("%s\n", &emailAddress)
-		fmt.Print("How many tickets would you like to purchase? ")
+		TICKETS: fmt.Print("How many tickets would you like to purchase? ")
 		fmt.Scanf("%d\n", &userTickets)
 
 		validNameLength := len(userFirstName) >= 2 && len(userLastName) >= 2
 		validEmail := strings.Contains(emailAddress, "@")
 		validTickets := userTickets > 0 && userTickets <= remainingTickets
 
-		if validTickets {
+		if validNameLength && validEmail && validTickets {
 			remainingTickets -= userTickets
 			bookings = append(bookings, userFirstName + " " + userLastName)
 
@@ -57,8 +57,16 @@ func main() {
 				break
 			}
 		} else {
-			fmt.Printf("There are insufficient %s tickets remaining to complete your request. You can book a maximum of %d tickets.\n", conferenceName, remainingTickets)
-			goto LOOP
+			if !validNameLength {
+				fmt.Println("You first name and-or last name is too short. Please enter a valid name.")
+				goto FIRSTNAME
+			} else if !validEmail {
+				fmt.Println("You did not enter a valid email address containing the '@' symbol. Please enter a valid email.")
+				goto EMAIL
+			} else if !validTickets {
+				fmt.Printf("You must purchase at least one ticket and can purchase a maximum of %d tickets. Please book a valid number of tickets.\n", remainingTickets)
+				goto TICKETS
+			}
 		}
 	}
 }
